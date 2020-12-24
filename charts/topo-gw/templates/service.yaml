@@ -1,0 +1,14 @@
+{{- $cnfHdr := (dict "" "") -}}
+{{- include "cnfTplHeader_2_9" (dict "cnfHdr" $cnfHdr "dot" . ) -}}
+apiVersion: v1
+kind: Service
+{{- include "cnfTplMetadata_2_9" (dict "setOffset" "0" "cnfHdr" $cnfHdr "metadata" .Values.componentSpec.service_fend.metaspec) }}
+spec:
+ selector:
+   app: {{ .Values.componentSpec.deployment.pod_metaspec.labels.app }}
+ ports:
+ - name: http
+   port: {{ .Values.componentSpec.service_fend.ports.port }}
+   targetPort: {{ .Values.componentSpec.service_fend.ports.targetPort }}
+   nodePort: {{ .Values.componentSpec.service_fend.ports.nodePort }}
+ type: {{ .Values.componentSpec.service_fend.type }}

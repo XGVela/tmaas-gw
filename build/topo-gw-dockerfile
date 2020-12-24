@@ -1,0 +1,28 @@
+# our base build image
+FROM topo-gw-builder:v0.1 as builder
+
+ARG BUILDER_LABEL
+
+RUN echo "Tagging Label IMAGE-TYPE=$BUILDER_LABEL"
+LABEL IMAGE-TYPE="$BUILDER_LABEL"
+
+# our main base image
+FROM adoptopenjdk/openjdk11:alpine-jre
+
+RUN apk add --no-cache --upgrade bash
+
+# install netcat
+#RUN apt-get update && apt-get install netcat -y
+
+# create bin directory
+RUN mkdir -p /opt/topo-gw
+
+# copy over the built artifact from the maven image
+COPY --from=builder target/TopoGateway-v1.0.jar /opt/topo-gw
+COPY --from=builder target/conf /opt/topo-gw/conf
+
+# add container start script
+ADD ./scripts/start.sh /bin/start.sh
+
+# set the startup command to run container
+ENTRYPOINT ["/bin/start.sh"]

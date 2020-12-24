@@ -1,0 +1,159 @@
+{{- $cnfHdr := (dict "" "") -}} 
+{{- include "cnfTplHeader_2_9" (dict "cnfHdr" $cnfHdr "dot" . ) -}}
+apiVersion: apps/v1
+kind: Deployment
+{{- include "cnfTplMetadata_2_9" (dict "setOffset" "0" "cnfHdr" $cnfHdr "metadata" "") }}
+spec:
+  replicas: {{ .Values.componentSpec.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.componentSpec.deployment.pod_metaspec.labels.app }}
+  template:
+    {{- include "cnfTplMetadata_2_9" (dict "setOffset" "4" "cnfHdr" $cnfHdr "metadata" .Values.componentSpec.deployment.pod_metaspec) }}
+    spec:
+      {{- if and (.Values.global) (.Values.global.xgvela) (.Values.global.xgvela.mgmtNodeSelector) (.Values.global.xgvela.mgmtNodeSelector.enabled) }}
+      nodeSelector:
+        {{ .Values.global.xgvela.mgmtNodeSelector.labelKey }}: {{ .Values.global.xgvela.mgmtNodeSelector.labelValue | quote }}
+      {{- end }}
+      serviceAccountName: xgvela-sa
+      initContainers:
+      - name: svc-discovery
+        {{- if and (.Values.global) (.Values.global.hub) }}
+        image: {{ .Values.global.hub }}/{{ .Values.tmaas.init_container.image.repository }}:{{ .Values.tmaas.init_container.image.tag }}
+        {{- else }}
+        image: {{ .Values.hub }}/{{ .Values.tmaas.init_container.image.repository }}:{{ .Values.tmaas.init_container.image.tag }}
+        {{- end }}
+        imagePullPolicy: Always
+        env:
+         - name: ETCD_SVC_FQDN
+           value: {{ .Values.global.xgvela.etcd_svc_fqdn | default .Values.etcd_svc_fqdn | quote }}
+         - name: KAFKA_SVC_FQDN
+           value: {{ .Values.global.xgvela.kafka_svc_fqdn | default .Values.kafka_svc_fqdn | quote }}
+        command: [ "/bin/bash", "-c", "svc-discovery.sh \"EVENT TMAAS\" " ]
+      containers:
+      - name: topo-gw
+        {{- if and (.Values.global) (.Values.global.hub) }}
+        image: {{ .Values.global.hub }}/{{ .Values.componentSpec.deployment.topo_gw.image }}:{{ .Values.componentSpec.deployment.topo_gw.tag }}
+        {{- else }}
+        image: {{ .Values.hub }}/{{ .Values.componentSpec.deployment.topo_gw.image }}:{{ .Values.componentSpec.deployment.topo_gw.tag }}
+        {{- end }}
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: Always
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 180
+          periodSeconds: 10
+        command: ["/bin/bash","-c","/bin/start.sh"]
+        env:
+         - name: JAVA_OPTIONS
+           value: ""
+         - name: KAFKA_SVC_FQDN
+           value: {{ .Values.global.xgvela.kafka_svc_fqdn | default .Values.kafka_svc_fqdn | quote }}
+         - name: ZK_SVC_FQDN
+           value: {{ .Values.global.xgvela.zk_svc_fqdn | default .Values.zk_svc_fqdn | quote }}
+         - name: K8S_SVC_FQDN
+           value: {{ .Values.global.xgvela.k8s_svc_fqdn | default .Values.k8s_svc_fqdn | quote }}
+         - name: K8S_NAMESPACE
+           valueFrom:
+            fieldRef:
+             fieldPath: metadata.namespace
+         - name: K8S_POD_ID
+           valueFrom:
+            fieldRef:
+             fieldPath: metadata.name
+        resources:
+          limits:
+            cpu: {{ .Values.componentSpec.deployment.topo_gw.resource.limit_cpu }}
+            memory: {{ .Values.componentSpec.deployment.topo_gw.resource.limit_memory }}
+          requests:
+            cpu: {{ .Values.componentSpec.deployment.topo_gw.resource.request_cpu }}
+            memory: {{ .Values.componentSpec.deployment.topo_gw.resource.request_memory }}
+        volumeMounts:
+        - mountPath: /opt/conf/static/
+          name: static-config   
+      - name: cim
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+       {{- if and (.Values.global) (.Values.global.hub) }}
+        image: {{ .Values.global.hub }}/{{ .Values.componentSpec.deployment.cim.image }}:{{ .Values.componentSpec.deployment.cim.tag }}
+        {{- else }}
+        image: {{ .Values.hub }}/{{ .Values.componentSpec.deployment.cim.image }}:{{ .Values.componentSpec.deployment.cim.tag }}
+        {{- end }}
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 6060
+        readinessProbe:
+          tcpSocket:
+            port: 6060
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 6060
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        env:
+         - name: MICROSERVICE_NAME
+           value: {{ $cnfHdr.nfVariables.svcname }}
+         - name: NF_PREFIX
+           value: {{ $cnfHdr.nfVariables.nfPrefix }}
+         - name: NF_TYPE
+           value: {{ $cnfHdr.nfVariables.nfType }}
+         - name: NF
+           value: {{ $cnfHdr.nfVariables.nfName }}
+         - name: ENABLE_KPI
+           value: "false"
+         - name: K8S_POD_ID
+           valueFrom:
+            fieldRef:
+             fieldPath: metadata.name
+         - name: MS_CONFIG_REVISION
+           valueFrom:
+            configMapKeyRef:
+              name: {{ $cnfHdr.nfVariables.svcname }}-mgmt-cfg
+              key: revision
+         - name: K8S_NAMESPACE
+           valueFrom:
+            fieldRef:
+             fieldPath: metadata.namespace
+        command: ["/bin/bash","-c","NatsSubFb"]
+        resources:
+          limits:
+            cpu: {{ .Values.componentSpec.deployment.cim.resource.limit_cpu }}
+            memory: {{ .Values.componentSpec.deployment.cim.resource.limit_memory }}
+          requests:
+            cpu: {{ .Values.componentSpec.deployment.cim.resource.request_cpu }}
+            memory: {{ .Values.componentSpec.deployment.cim.resource.request_memory }}
+        volumeMounts:
+        - mountPath: {{ .Values.componentSpec.deployment.cim.mount.container_path }}
+          name: mnt-oam-sidecar
+        - mountPath: /opt/conf/
+          name: cim-config
+        - mountPath: /opt/conf/static/
+          name: static-config  
+      volumes:
+      - name: mnt-oam-sidecar
+        hostPath:
+          path: {{ .Values.componentSpec.deployment.cim.mount.host_path }}
+          type: {{ .Values.componentSpec.deployment.cim.mount.type }}
+      - configMap:
+          items:
+            - key: cim.json
+              path: cim.json
+          name: {{ $cnfHdr.nfVariables.svcname }}-mgmt-cfg
+        name: cim-config
+      - configMap:
+          items:
+            - key: common-infra.json
+              path: common-infra.json
+          name: {{ $cnfHdr.nfVariables.svcname }}-static-cfg
+        name: static-config
