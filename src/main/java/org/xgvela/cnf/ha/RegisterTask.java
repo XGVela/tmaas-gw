@@ -75,7 +75,7 @@ public class RegisterTask {
 	private static void setRegisterRequestEntity() {
 		try {
 			entity = new HttpEntity<String>(PodWatcher.mapper
-					.writeValueAsString(new RegisterRequest(NatsAppender.TopoGateway, NatsAppender.K8sContainer)));
+					.writeValueAsString(new RegisterRequest(NatsAppender.tmaas-gw, NatsAppender.K8sContainer)));
 		} catch (JsonProcessingException e) {
 			System.out.println(e.getMessage());
 		}

@@ -28,9 +28,9 @@
 	</parent>
 
 	<groupId>org.xgvela</groupId>
-	<artifactId>TopoGateway</artifactId>
+	<artifactId>tmaas-gw</artifactId>
 	<version>v1.0</version>
-	<name>TopoGateway</name>
+	<name>tmaas-gw</name>
 	<description>TMaaS Topo Gateway</description>
 
 	<properties>

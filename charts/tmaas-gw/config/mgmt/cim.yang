@@ -1,7 +1,7 @@
 module xcf-tmaas-gw-cim {
 		yang-version "1.1";
 		namespace "urn:rdns:org:xgvela:tmaas-gw:cim";
-		prefix xgvela-topo-gw;
+		prefix xgvela-tmaas-gw;
 
         import ietf-inet-types { prefix inet; }
 

@@ -113,9 +113,9 @@ public class CommonInfraConfig {
 		} catch (IOException e) {
 			LOG.error("Error occured while parsing common-infra file: " + e.getMessage());
 		}
-		single_instance.setApiGwFqdn(getFqdn("config-service"));
+		single_instance.setApiGwFqdn(getFqdn("cmaas"));
 		single_instance.setTpaasFqdn(getFqdn("tpaas"));
-		single_instance.setTopoengineFqdn(getFqdn("topo-engine"));
+		single_instance.setTopoengineFqdn(getFqdn("tmaas"));
 
 	}
 
@@ -130,7 +130,7 @@ public class CommonInfraConfig {
 	private String getFqdn(String microservice) {
 		String fqdn = "";
 		switch (microservice) {
-		case "config-service":
+		case "cmaas":
 			fqdn = k8s.getServiceName(microservice) + "." + System.getenv("K8S_NAMESPACE")
 					+ ".svc.cluster.local:8008";
 			break;
@@ -138,7 +138,7 @@ public class CommonInfraConfig {
 			fqdn = k8s.getServiceName(microservice) + "." + System.getenv("K8S_NAMESPACE")
 					+ ".svc.cluster.local:7070";
 			break;
-		case "topo-engine":
+		case "tmaas":
 			fqdn = k8s.getServiceName(microservice) + "." + System.getenv("K8S_NAMESPACE")
 					+ ".svc.cluster.local:8080";
 			break;

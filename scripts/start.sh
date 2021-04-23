@@ -33,7 +33,7 @@ echo "CID $K8S_CONTAINER_ID"
 
 echo "$JAVA_OPTIONS"
 echo "======== Starting Topo Gateway ========"
-java -XX:+PrintFlagsFinal $JAVA_OPTIONS -jar /opt/topo-gw/TopoGateway-v1.0.jar
+java -XX:+PrintFlagsFinal $JAVA_OPTIONS -jar /opt/tmaas-gw/tmaas-gw-v1.0.jar
 
 echo "======== Exiting container ======="
 

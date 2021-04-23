@@ -17,7 +17,7 @@
 # This build script takes four arguments:
 # $1=TOPO_GW image tag
 # $2=CLEAN_BUILD_BUILDER_IMAGE:(Optional): ["yes"|"no"] (Default: no). This will do a clean build of builder image.
-# $3=DELETE_BUILDER_IMAGE:(Optional): ["yes"|"no"] (Default: no). This will delete the image after artifacts are released.  
+# $3=DELETE_BUILDER_IMAGE:(Optional): ["yes"|"no"] (Default: no). This will delete the image after artifacts are released.
 # $4=cim image tag (Optional)
 
 set -e
@@ -28,10 +28,10 @@ echo "Too few arguments passed; atleast one required - Topo Gateway image tag"
 exit 1
 fi
 
-BUILDER_NAME="topo-gw-builder"
+BUILDER_NAME="tmaas-gw-builder"
 BUILDER_VERSION="v0.1"
 
-MICROSERVICE_NAME="topo-gw"
+MICROSERVICE_NAME="tmaas-gw"
 MICROSERVICE_VERSION=$1
 
 ARTIFACTS_PATH="./artifacts"
@@ -53,17 +53,17 @@ echo -e "\e[1;32;40m[TMAAS-BUILD] Build: $BUILDER_NAME, Version:$BUILDER_VERSION
 docker build --rm $BUILDER_ARG -f ./build/$MICROSERVICE_NAME-builder-dockerfile -t $BUILDER_NAME:$BUILDER_VERSION .
 
 ##NANO SEC timestamp
-BUILDER_LABEL="topo-gw-builder-$(date +%s%9N)"
+BUILDER_LABEL="tmaas-gw-builder-$(date +%s%9N)"
 echo -e "\e[1;32;40m[TMAAS-BUILD] Build MICROSERVICE_NAME:$MICROSERVICE_NAME, Version:$MICROSERVICE_VERSION \e[0m"
 docker build --rm --build-arg BUILDER_LABEL=$BUILDER_LABEL -f ./build/$MICROSERVICE_NAME-dockerfile -t $MICROSERVICE_NAME:$MICROSERVICE_VERSION .
 
 echo -e "\e[1;32;40m[TMAAS-BUILD] Releasing artifacts \e[0m"
 docker save $MICROSERVICE_NAME:$MICROSERVICE_VERSION | gzip > $ARTIFACTS_PATH/images/$MICROSERVICE_NAME-$MICROSERVICE_VERSION.tar.gz
 
-echo -e "\e[1;32;40m[TMAAS-BUILD] Upating topo-gw chart \e[0m"
-cp -r ./charts/topo-gw $ARTIFACTS_PATH/charts/.
-sed -i "s/topo_gw_tag/$1/" $ARTIFACTS_PATH/charts/topo-gw/values.yaml
-#sed -i "s/cim_tag/$4/" $ARTIFACTS_PATH/charts/topo-gw/values.yaml
+echo -e "\e[1;32;40m[TMAAS-BUILD] Upating tmaas-gw chart \e[0m"
+cp -r ./charts/tmaas-gw $ARTIFACTS_PATH/charts/.
+sed -i -e "s/topo_gw_tag/$1/" $ARTIFACTS_PATH/charts/tmaas-gw/values.yaml
+#sed -i -e "s/cim_tag/$4/" $ARTIFACTS_PATH/charts/tmaas-gw/values.yaml
 md5sum $ARTIFACTS_PATH/images/*
 
 echo -e "\e[1;32;40m[TMAAS-BUILD] Deleting intermediate and microservice images \e[0m"

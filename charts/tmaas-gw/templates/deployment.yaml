@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{{- $cnfHdr := (dict "" "") -}} 
+{{- $cnfHdr := (dict "" "") -}}
 {{- include "cnfTplHeader_2_9" (dict "cnfHdr" $cnfHdr "dot" . ) -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -45,7 +45,7 @@ spec:
            value: {{ .Values.global.xgvela.kafka_svc_fqdn | default .Values.kafka_svc_fqdn | quote }}
         command: [ "/bin/bash", "-c", "svc-discovery.sh \"EVENT TMAAS\" " ]
       containers:
-      - name: topo-gw
+      - name: tmaas-gw
         {{- if and (.Values.global) (.Values.global.hub) }}
         image: {{ .Values.global.hub }}/{{ .Values.componentSpec.deployment.topo_gw.image }}:{{ .Values.componentSpec.deployment.topo_gw.tag }}
         {{- else }}
@@ -91,7 +91,7 @@ spec:
             memory: {{ .Values.componentSpec.deployment.topo_gw.resource.request_memory }}
         volumeMounts:
         - mountPath: /opt/conf/static/
-          name: static-config   
+          name: static-config
       - name: cim
         securityContext:
           capabilities:
@@ -153,7 +153,7 @@ spec:
         - mountPath: /opt/conf/
           name: cim-config
         - mountPath: /opt/conf/static/
-          name: static-config  
+          name: static-config
       volumes:
       - name: mnt-oam-sidecar
         hostPath:

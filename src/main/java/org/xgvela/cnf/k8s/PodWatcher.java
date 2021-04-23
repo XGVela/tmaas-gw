@@ -148,8 +148,8 @@ public class PodWatcher {
 							String nfServiceName = annotations.get(Constants.NF_SERVICE_ID).asText();
 							String nfServiceType = annotations.get(Constants.NF_SERVICE_TYPE).asText();
 							if (!Leader.leaderFlag.get()) {
-								//For topo-gw dont return let it push to kafka even if its non-leader
-								if (!nfServiceName.equalsIgnoreCase("topo-gw")) {
+								//For tmaas-gw dont return let it push to kafka even if its non-leader
+								if (!nfServiceName.equalsIgnoreCase("tmaas-gw")) {
 									return;
 								}
 							}

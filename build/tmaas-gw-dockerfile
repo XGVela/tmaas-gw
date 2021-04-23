@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # our base build image
-FROM topo-gw-builder:v0.1 as builder
+FROM tmaas-gw-builder:v0.1 as builder
 
 ARG BUILDER_LABEL
 
@@ -29,11 +29,11 @@ RUN apk add --no-cache --upgrade bash
 #RUN apt-get update && apt-get install netcat -y
 
 # create bin directory
-RUN mkdir -p /opt/topo-gw
+RUN mkdir -p /opt/tmaas-gw
 
 # copy over the built artifact from the maven image
-COPY --from=builder target/TopoGateway-v1.0.jar /opt/topo-gw
-COPY --from=builder target/conf /opt/topo-gw/conf
+COPY --from=builder target/tmaas-gw-v1.0.jar /opt/tmaas-gw
+COPY --from=builder target/conf /opt/tmaas-gw/conf
 
 # add container start script
 ADD ./scripts/start.sh /bin/start.sh

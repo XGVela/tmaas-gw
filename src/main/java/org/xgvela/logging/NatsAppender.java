@@ -38,7 +38,7 @@ import io.nats.client.Connection;
 public class NatsAppender extends AbstractAppender {
 
 	public static String K8sContainer = String.valueOf(System.getenv("K8S_CONTAINER_ID"));
-	public static String TopoGateway = String.valueOf("topo-gw");
+	public static String tmaas-gw = String.valueOf("tmaas-gw");
 
 	private NatsAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions) {
 		super(name, filter, layout, ignoreExceptions);
@@ -74,7 +74,7 @@ public class NatsAppender extends AbstractAppender {
 	public static byte[] buildFlatBuff(String record) {
 
 		FlatBufferBuilder builder = new FlatBufferBuilder(1024);
-		int containerName = builder.createString(TopoGateway);
+		int containerName = builder.createString(tmaas-gw);
 		int containerId = builder.createString(K8sContainer);
 		int payload = builder.createString(record);
 		int log = Log.createLog(builder, containerId, containerName, payload);

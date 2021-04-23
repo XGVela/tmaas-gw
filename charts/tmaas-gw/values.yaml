@@ -55,7 +55,7 @@ nf:
 
 ###########################################
 
-serviceAccount: topo-gw-account
+serviceAccount: tmaas-gw-account
 hub: 10.1.1.1:5000
 tmaas:
   init_container:
@@ -76,7 +76,7 @@ componentSpec:
 
     pod_metaspec:
       labels:
-        app: topo-gw
+        app: tmaas-gw
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: /metrics
@@ -85,7 +85,7 @@ componentSpec:
 #        k8s.v1.cni.cncf.io/networks: macvlan-hostlocal-0
 
     topo_gw:
-      image: topo-gw
+      image: tmaas-gw
       tag: topo_gw_tag
       resource:
         limit_memory: 500Mi
