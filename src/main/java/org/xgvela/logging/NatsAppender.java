@@ -74,7 +74,7 @@ public class NatsAppender extends AbstractAppender {
 	public static byte[] buildFlatBuff(String record) {
 
 		FlatBufferBuilder builder = new FlatBufferBuilder(1024);
-		int containerName = builder.createString(tmaas-gw);
+		int containerName = builder.createString("tmaas-gw");
 		int containerId = builder.createString(K8sContainer);
 		int payload = builder.createString(record);
 		int log = Log.createLog(builder, containerId, containerName, payload);
