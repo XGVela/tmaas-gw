@@ -13,22 +13,6 @@
 # limitations under the License.
 
 ######## CNF TEMPLATE DEFINITIONS ###########
-global:
-  xgvela:
-    topogw_fqdn: "topo-gw.mvnr-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:8080"
-    logging_svc_url: "fb-service.xgvela-paas.svc.cluster.local:5175"
-    logging_svc_tcp_port: "5170"
-    kafka_svc_fqdn: "kafka-svc.mvnr-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:9092"
-    etcd_svc_fqdn: "etcd.mvnr-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:2379"
-    enable_retrx: "true"
-    log_format: "json"
-    mgmtNodeSelector:
-       enabled: false
-  infraNodeSelector:
-    enabled: false
-    labelKey: infra
-    labelValue: true
-
 nf:
   version: "topo_gw_tag"
   vendorId: "mvnr"
