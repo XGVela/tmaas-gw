@@ -57,7 +57,7 @@ nf:
 
 serviceAccount: tmaas-gw-account
 hub: 10.1.1.1:5000
-tmaas:
+tmaas_gw:
   init_container:
     image:
       repository: xgvela-svc-init
@@ -84,7 +84,7 @@ componentSpec:
 #        xgvela.com/vip-networks: '[{"interface": "net1","poolids": ["vipspec1"]}]'
 #        k8s.v1.cni.cncf.io/networks: macvlan-hostlocal-0
 
-    topo_gw:
+    tmaas_gw:
       image: tmaas-gw
       tag: topo_gw_tag
       resource:
