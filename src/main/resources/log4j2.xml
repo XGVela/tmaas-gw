@@ -21,19 +21,13 @@
 			<PatternLayout
 				pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5level][%corrId]:[%-5t] %logger{2}- %msg%n" />
 		</Console>
-		<NatsAppender name="NatsAppender">
-			<PatternLayout
-				pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5level][%corrId]:[%-5t] %logger{2}- %msg" />
-		</NatsAppender>
 	</Appenders>
 
 	<Loggers>
 		<Logger name="org.xgvela" level="debug" additivity="false">
-			<AppenderRef ref="NatsAppender" />
 			<AppenderRef ref="STDOUT" />
 		</Logger>
 		<Root level="error">
-			<AppenderRef ref="NatsAppender" />
 			<AppenderRef ref="STDOUT" />
 		</Root>
 	</Loggers>
