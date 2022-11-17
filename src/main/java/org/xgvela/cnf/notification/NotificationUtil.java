@@ -15,7 +15,6 @@
 package org.xgvela.cnf.notification;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import org.xgvela.cnf.util.NatsUtil;
 import io.nats.client.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,7 +82,6 @@ public class NotificationUtil {
 		byte[] buffer = builder.sizedByteArray();
 		builder.clear();
 		LOG.info("Publishing event: " + eventName + " to NATS for source: " + sourceName);
-		publishEvent(buffer);
 	}
 
 	private static int addMonitoredAttributes(FlatBufferBuilder builder, ArrayList<KeyValueBean> monAttributes) {
@@ -153,11 +151,6 @@ public class NotificationUtil {
 			beanVec[i] = kv;
 		}
 		return beanVec;
-	}
-
-	private static void publishEvent(byte[] message) {
-		Connection natsConnection = NatsUtil.getConnection();
-		natsConnection.publish("EVENT", message);
 	}
 
 	public static void sendEvent(String eventName, ArrayList<KeyValueBean> additionalInfo, String sourceId,

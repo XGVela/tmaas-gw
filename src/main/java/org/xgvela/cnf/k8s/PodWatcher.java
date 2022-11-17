@@ -54,7 +54,6 @@ public class PodWatcher {
 	public static String podNamespace = String.valueOf(System.getenv("K8S_NAMESPACE"));
 	public static ObjectMapper mapper = new ObjectMapper();
 
-	public static final CountDownLatch registrationLatch = new CountDownLatch(1);
 	public static final CountDownLatch waitLatch = new CountDownLatch(1);
 	public static final String TOPO_GW_LEADER_ELECTION = "/topo_gw/election";
 	public static final String TOPO_GW_START = "/topo_gw/start";
@@ -97,8 +96,6 @@ public class PodWatcher {
 	@PostConstruct
 	public void startWatchingPod() throws Exception {
 		ZKManager.selectLeader(TOPO_GW_LEADER_ELECTION);
-		// await registration and NATS connection
-		registrationLatch.await();
 		new Thread(() -> {
 			try {
 				startPodWatch();
