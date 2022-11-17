@@ -48,7 +48,7 @@
 {{ end -}}
 
 {{- define "nf.prefix_2_9" -}}
-{{- printf "%s-%s-%s-%s-%s" (include "nf.vendorId" (dict "Values" $.Values) |toString) (include "nf.xgvelaId" (dict "Values" $.Values) |toString) (include "nf.nfClass" (dict "Values" $.Values) |toString) (include "nf.nfType" (dict "Values" $.Values) |toString) (include "nf.nfId" (dict "Values" $.Values) |toString) | trunc 63 | trimSuffix "-" -}}
+{{- printf "oam-system" -}}
 {{- end -}}
 
 {{- define "tmaasSpec_2_9" -}}
