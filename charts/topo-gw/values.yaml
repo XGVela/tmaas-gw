@@ -13,8 +13,47 @@
 # limitations under the License.
 
 ######## CNF TEMPLATE DEFINITIONS ###########
+global:
+  dnPrefix: "mvnr"
+  xgvela:
+    use_release_ns: false
+    create_ns: true
+    infra_deploy: true
+    infraNodeSelector:
+      enabled: true
+      labelKey: infra
+      labelValue: true
+    mgmtNodeSelector:
+      enabled: true
+      labelKey: mgmt
+      labelValue: true
+    kafka_svc_fqdn: "oam-kafka.oam-system:9092"
+    etcd_svc_fqdn: "192.168.0.8:2379"
+    logging_svc_url: "fb-service.xgvela-paas.svc.cluster.local:5175"
+    logging_svc_tcp_port: "5170"
+    k8s_svc_fqdn: "kubernetes.default.svc.cluster.local"
+    zk_svc_fqdn: "oam-zookeeper.oam-system:2181"
+    storage_engine: "elasticsearch"
+    enable_retrx : "false"
+    log_format: "json"
+    limaasEnabled: false
+    enableXGVelaScaling: false
+    storage:
+      storageClass: "openebs-standalone"
+      isProviderXGVela: false
+      isLVPenabled: false
+      xgvelaLocalStorageHostPathPrefix: "/data"
+      xgvelaLocalStoragePVJobImage: "xgvela-svc-init"
+      xgvelaLocalStoragePVJobTag: "v0.3.4"
+      hostlocalVolumeSelector: []
+    fluentd:
+      enabled: false
+      output:
+        brokers: <output_kafka_url>:<port> # output kafka url
+        topic: logs
+
 nf:
-  version: "topo_gw_tag"
+  version: "v0.1-xgvela"
   vendorId: "mvnr"
   xgvelaId: "xgvela1" #do not edit
   nfClass: "mgmt"
@@ -56,12 +95,11 @@ nf:
 ###########################################
 
 serviceAccount: topo-gw-account
-hub: 10.1.1.1:5000
 tmaas:
   init_container:
     image:
       repository: xgvela-svc-init
-      tag: v0.3.4
+      tag: 1.0
 componentSpec:
   service_fend:
     metaspec: {}
@@ -85,8 +123,8 @@ componentSpec:
 #        k8s.v1.cni.cncf.io/networks: macvlan-hostlocal-0
 
     topo_gw:
-      image: topo-gw
-      tag: topo_gw_tag
+      image: tmaas-gw
+      tag: 1.0
       resource:
         limit_memory: 500Mi
         limit_cpu: 500m
@@ -95,18 +133,18 @@ componentSpec:
 
     cim:
       image: cim
-      tag: v1.11
+      tag: 1.0
       resource:
         limit_memory: 200Mi
         limit_cpu: 100m
         request_memory: 100Mi
         request_cpu: 50m
       mount:
-        type: Directory
+        type: DirectoryOrCreate
         container_path: /opt/logs
         host_path: /data/logs
 
 etcd_svc_fqdn: "etcd.xgvela-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:2379"
-kafka_svc_fqdn: "kafka-svc.xgvela-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:9092"
+kafka_svc_fqdn: "oam-kafka.oam-system:9092"
 k8s_svc_fqdn: "kubernetes.default.svc.cluster.local"
 zk_svc_fqdn: "zk-0.zk.xgvela-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:2181,zk-1.zk.xgvela-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:2181,zk-2.zk.xgvela-xgvela1-infra-xgvela-xgvela1.svc.cluster.local:2181"
